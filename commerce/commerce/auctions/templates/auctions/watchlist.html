@@ -1,0 +1,28 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>Watchlist</h2>
+
+<div class="items">
+    {% for listing in listings %}
+    <div class="item">
+        {% if listing.ended_manually %}
+            <h4 style="margin-bottom:15px; color: red;"><b>This Auction has ended</b></h4>
+        {% endif %}
+        <img src="{{ listing.image.url }}" width="300px" height="300px" /><br>
+        <div class="s">
+            <h1><a href="{% url 'listing' listing.title %}" class="product-image">{{ listing.title }}</a></h1><br>
+            <h4 style="color: grey;">
+                <bold>Price:</bold> &#36;{{ listing.start_bid }}
+            </h4><br>
+            <p style="color: grey;">{{listing.description}}</p>
+            {% if listing.category %}
+            <p>{{ listing.category }}</p>
+            {% endif %}
+            <p>Duration: {{ listing.duration }} days</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

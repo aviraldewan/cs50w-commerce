@@ -1,0 +1,115 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{ info.title }}
+{% endblock %}
+
+{% block body %}
+
+    {% if ended %}
+       <h4 style="margin-bottom:15px; color: red;"><b>This Auction has ended</b></h4>
+    {% else %}
+        <p><b>Time Left: {{ minutes }} min : {{ hours }} h : {{ days }} d</b></p>
+    {% endif %}
+
+    <h1 style="margin-bottom: 25px;">Listing: {{ info.title }}</h1>
+
+    {% if win %}
+        <h4 style="margin-bottom: 15px; color: blue;"><b>{{ winner }}</b></h4>
+    {% endif %}
+
+    {% if owner and not ended %}
+    <div style="margin-bottom: 15px;">
+        <form method="post" action="{% url 'end_auction' info.title %}">
+
+            {% csrf_token %}
+            <input type="submit" value="End Auction Early">
+
+        </form>
+    </div>
+    {% endif %}
+
+
+    {% if request.user.is_authenticated %}
+    <div style="margin-bottom: 15px">
+        <form method="post" action="{% url 'watch_auction' info.title %}">
+
+            {% csrf_token %}
+            {% if info in request.user.watchlist.all %}
+                <input type="submit" value="Remove from Watchlist">
+            {% else %}
+                <input type="submit" value="Add to Watchlist">
+            {% endif %}
+        </form>
+        </div>
+    {% endif %}
+
+    <img style="margin-top: 15px; margin-bottom: 15px;" src="{{info.image.url}}" width="100%" height="500px">
+
+    <div style="padding:10px;">
+
+    <h5>{{ info.title }}</h5>
+    <h2>&#36;{{ info.start_bid }}</h2>
+
+    Bids: {{ info.bids.all.count }}<br>
+    {% if highest_bid == info.start_bid %}
+        Highest Bid: &#36;{{ highest_bid }}(Price)
+    {% else %}
+        Highest Bid: &#36;{{ highest_bid }}
+    {% endif %}
+    {% if request.user.is_authenticated and not ended %}
+        <form method="post" action="{% url 'place_bid' info.title %}">
+
+            {% csrf_token %}
+            {{ bidform.bid }}
+            <input type="submit" value="Place Bid">
+        </form>
+    {% endif %}
+
+    <br>
+
+    <h4>Details:</h4>
+    <ul>
+        <li>Listed by: {{ info.user }}</li>
+            <li>Category: {% if info.category %}<a href="{% url 'category' info.category %}">{{ info.category }}</a></li>
+        {% else %}
+            No category listed
+        {% endif %}
+        <li>Duration: {{ info.duration }} days</li>
+        <li>Start Time: {{ info.start_time }}(UTC)</li>
+        <li>End Time: {{ info.end_time }}(UTC)</li>
+    </ul>
+
+    <h4>Description:</h4>
+    <p>{{ info.description }}</p>
+    </div>
+
+    {% if request.user.is_authenticated and not ended %}
+
+    <form method="post" action="{% url 'comment' info.title %}">
+
+        {% csrf_token %}
+        {{ commentform }}
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+    {% endif %}
+
+    <br><br>
+
+        <h5>Comments by other people</h5>
+    {% if comments %}
+        {% for review in comments %}
+            <hr>
+            <div style="margin-bottom: 35px;">
+                <p>By <b>{{ review.user }}</b>
+                    <br>{{ review.time }}(UTC)<br>
+                <p>{{ review.comment }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+       Be the first to write a comment on this auction!
+    {% endif %}
+
+{% endblock %}

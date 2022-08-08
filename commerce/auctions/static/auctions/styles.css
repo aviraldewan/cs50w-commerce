@@ -1,0 +1,31 @@
+body {
+    padding: 10px;
+}
+
+.items {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.items .item {
+    border: 1px solid black;
+    padding: 20px;
+    margin: 10px;
+    width: 100%;
+    height: auto;
+}
+
+.items .item img {
+    float: left;
+    margin-right: 50px;
+}
+
+.items .item a {
+    text-decoration: none;
+    color: black;
+}
+
+.items .item a:hover {
+    text-decoration: underline;
+}
+
